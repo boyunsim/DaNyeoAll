@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.green.danyeoall.city.CityMapper">
-    <insert id="insSight">
+    <insert id="insSight" useGeneratedKeys="true" keyProperty="placeId">
         INSERT INTO city_place
         SET  lat = #{lat}
         , lng = #{lng}
@@ -15,6 +15,7 @@
              , city_kor_name AS cityKorName
              , city_eng_name AS cityEngName
              , city_pic AS cityPic
+             , color
         FROM city
     </select>
     <select id="selSightList">
@@ -23,7 +24,8 @@
              , place_pic AS placePic
              , place_address AS placeAddress
              , place_star AS placeStar
-             , place_comment AS placeComment
+             , lat
+             , lng
         FROM city_place
         WHERE city_id = #{cityId}
         AND category = #{category}

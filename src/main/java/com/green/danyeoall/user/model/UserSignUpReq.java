@@ -12,10 +12,12 @@ import lombok.ToString;
 public class UserSignUpReq {
     @JsonIgnore
     private long userId;
-    @Schema(description = "유저 비밀번호", example = "1212", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "유저 비밀번호", example = "testtest1212!!", requiredMode = Schema.RequiredMode.REQUIRED)
     private String upw;
     @Schema(description = "유저 이메일", example = "test@naver.com")
     private String email;
     @Schema(description = "유저 닉네임", example = "홍길동")
     private String nickName;
+    @Schema(description = "유저 이름", example = "김우준")
+    private String name;
 }

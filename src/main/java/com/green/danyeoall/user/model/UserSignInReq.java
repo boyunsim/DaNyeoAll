@@ -8,8 +8,8 @@ import lombok.Setter;
 @Setter
 @Schema(title = "로그인 요청")
 public class UserSignInReq {
-    @Schema(title = "이메일", example = "test.naver.com")
+    @Schema(title = "이메일", example = "by5028@naver.com")
     private String email;
-    @Schema(title = "비밀번호", example = "1212", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(title = "비밀번호", example = "testtest1212!", requiredMode = Schema.RequiredMode.REQUIRED)
     private String upw;
 }

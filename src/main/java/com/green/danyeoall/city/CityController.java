@@ -31,7 +31,7 @@ public class CityController {
                 .build();
     }
 
-    @GetMapping("selCity")
+    @GetMapping("selcity")
     @Operation(summary = "도시 보기")
     public ResultResponse<List<CityGetRes>> getCityList(){
         List<CityGetRes> res = service.getCity();
@@ -41,7 +41,7 @@ public class CityController {
                 .build();
     }
 
-    @GetMapping("selSight")
+    @GetMapping("selsight")
     @Operation(summary = "장소 보여주기")
     public ResultResponse<List<PlaceListGetRes>> getSightList(@ParameterObject PlaceListGetReq p){
         List<PlaceListGetRes> res = service.getSightList(p);

@@ -3,9 +3,11 @@ package com.green.danyeoall.mail;
 import com.green.danyeoall.common.model.ResultResponse;
 import com.green.danyeoall.mail.model.MailSendDto;
 import com.green.danyeoall.mail.model.MemberEmailVerifyReq;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
@@ -18,14 +20,16 @@ public class MailController {
     private final MailService mailService;
 
     @ResponseBody
-    @PostMapping("/email-check") // 이 부분은 각자 바꿔주시면 됩니다.
+    @PostMapping("email-check") // 이 부분은 각자 바꿔주시면 됩니다.
+    @Operation(summary = "이메일 체크")
     public String emailCheck(@RequestBody MailSendDto mailDto) throws MessagingException, UnsupportedEncodingException {
         String authCode = mailService.sendSimpleMessage(mailDto.getEmail());
         return authCode; // Response body에 값을 반환
     }
 
-    @PatchMapping("/auth-check")
-    public ResultResponse<Integer> updAuthCheck(@RequestBody MemberEmailVerifyReq p) {
+    @PutMapping("auth-check")
+    @Operation(summary = "인증 체크")
+    public ResultResponse<Integer> updAuthCheck(@ModelAttribute MemberEmailVerifyReq p) {
         int result = mailService.verifyCode(p);
         return ResultResponse.<Integer>builder()
                 .resultMessage(result == 1 ? "인증되었습니다." : "인증되지 않았습니다.")

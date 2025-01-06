@@ -10,28 +10,71 @@
               upw
             , email
             , nick_name
+            , name
         ) VALUES (
               #{upw}
             , #{email}
             , #{nickName}
+            , #{name}
         )
     </insert>
 
     <select id="postSignIn">
         SELECT user_id AS userId
              , upw
-             , IFNULL(nick_name, email) AS nickName
+             , nick_name
              , email
+             , name
           FROM user
          WHERE email = #{email}
     </select>
+    
+    <select id="selUserPlanList">
+        SELECT B.city_id, B.city_kor_name, B.city_pic, B.color, A.start_date, A.plan_date, A.plan_master_id
+        FROM plan_master A
+        JOIN city B
+        ON A.city_id = B.city_id
+        JOIN plan_detail C
+        ON C.plan_master_id = A.plan_master_id
+        WHERE user_id = #{userId}
+        GROUP BY A.plan_master_id
+        ORDER BY A.plan_master_id DESC
+    </select>
 
-    <update id="patchUser">
+    <select id="getUpwByUserId">
+        select upw
+        from user
+        where user_id = #{userId}
+    </select>
+
+    <update id="updUserNickName">
         UPDATE user
-           SET nick_name = #{nickName}
-             , upw = #{upw}
-             , updated_at = current_timestamp()
-         WHERE user_id = #{userId}
+        SET nick_name = #{nickName}
+        WHERE user_id = #{userId}
     </update>
+
+    <update id="updUserPassword">
+        UPDATE user
+        SET upw = #{newUpw}
+        WHERE user_id = #{userId}
+    </update>
+
+    <update id="patchUserUpw">
+        UPDATE user
+           SET upw = #{upw}
+         WHERE email = #{email}
+    </update>
+
+    <select id="selHashedUpwByUserId">
+        SELECT upw
+        FROM user
+        WHERE user_id = #{userId}
+    </select>
+
+    <delete id="deleteUser">
+        DELETE FROM user
+         WHERE user_id = #{userId}
+    </delete>
+
 
 </mapper>

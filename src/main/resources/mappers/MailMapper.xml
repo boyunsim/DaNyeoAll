@@ -20,6 +20,9 @@
     <select id="selAuthCheck">
         SELECT auth_check
           FROM user_auth
+         WHERE email = #{email}
+         ORDER BY created_at DESC
+         LIMIT 1
     </select>
 
     <update id="updAuthCheck">
@@ -27,5 +30,12 @@
            SET auth_check = #{authCheck}
          WHERE email = #{email} AND auth_code = #{authCode}
     </update>
+
+    <delete id="delAuthInfo">
+        DELETE FROM user_auth
+         WHERE auth_check = 1 AND email = #{email}
+         ORDER BY created_at DESC
+         LIMIT 1
+    </delete>
 
 </mapper>

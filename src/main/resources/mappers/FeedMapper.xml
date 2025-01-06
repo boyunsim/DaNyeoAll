@@ -4,65 +4,92 @@
 <mapper namespace="com.green.danyeoall.feed.FeedMapper">
     <select id="selFeedListMain">
         SELECT A.plan_master_id AS planMasterId, A.title, A.created_at AS createdAt
-             , C.city_pic, C.color, C.city_kor_name AS cityName
-             , COUNT(D.user_id) AS likeCnt
-          FROM feed A
-         INNER JOIN plan_master B
-            ON A.plan_master_id = B.plan_master_id
-         INNER JOIN city C
-            ON B.city_id = C.city_id
-          LEFT JOIN feed_like D
-            ON A.plan_master_id = D.plan_master_id
-         GROUP BY A.plan_master_id
-         ORDER BY COUNT(D.user_id) DESC
-         LIMIT 4
+        , C.city_pic, C.color, C.city_kor_name AS cityName, C.city_id
+        , COUNT(D.user_id) AS likeCnt
+        FROM feed A
+        INNER JOIN plan_master B
+        ON A.plan_master_id = B.plan_master_id
+        INNER JOIN city C
+        ON B.city_id = C.city_id
+        LEFT JOIN feed_like D
+        ON A.plan_master_id = D.plan_master_id
+        GROUP BY A.plan_master_id
+        ORDER BY COUNT(D.user_id) DESC
+        LIMIT 8
     </select>
 
     <select id="selFeedList">
         SELECT A.plan_master_id AS planMasterId, A.title, A.created_at AS createdAt
-             , C.city_pic, C.color, C.city_kor_name AS cityName
-             , COUNT(D.user_id) AS likeCnt
-          FROM feed A
-          LEFT JOIN plan_master B
-            ON A.plan_master_id = B.plan_master_id
-          LEFT JOIN city C
-            ON B.city_id = C.city_id
-          LEFT JOIN feed_like D
-            ON A.plan_master_id = D.plan_master_id
-         GROUP BY A.plan_master_id
-         ORDER BY COUNT(D.user_id) DESC
-         LIMIT #{startIdx}, #{size}
+        , C.city_pic, C.color, C.city_kor_name AS cityName
+        , COUNT(D.user_id) AS likeCnt, C.city_id
+        FROM feed A
+        LEFT JOIN plan_master B
+        ON A.plan_master_id = B.plan_master_id
+        LEFT JOIN city C
+        ON B.city_id = C.city_id
+        LEFT JOIN feed_like D
+        ON A.plan_master_id = D.plan_master_id
+        GROUP BY A.plan_master_id
+        ORDER BY COUNT(D.user_id) DESC
     </select>
-    
+
+    <select id="selFeedOnlyPlan">
+        <choose>
+            <when test="userId != null">
+                SELECT A.title, A.content, B.start_date AS startDate, B.end_date AS endDate, B.people_cnt AS peopleCnt
+                , C.color, C.city_kor_name AS cityName, C.city_id, B.user_id
+                , IF(D.plan_master_id IS NULL, 0, 1) AS isLike
+                FROM feed A
+                INNER JOIN plan_master B
+                ON A.plan_master_id = B.plan_master_id
+                INNER JOIN city C
+                ON B.city_id = C.city_id
+                LEFT JOIN feed_like D
+                ON D.plan_master_id = A.plan_master_id
+                AND D.user_id = #{userId}
+                WHERE B.plan_master_id = #{planMasterId}
+            </when>
+            <otherwise>
+                SELECT A.title, A.content, B.start_date AS startDate, B.end_date AS endDate, B.people_cnt AS peopleCnt
+                , C.color, C.city_kor_name AS cityName, C.city_id, B.user_id
+                , IF(D.plan_master_id = -1, 1, 2) AS isLike
+                FROM feed A
+                INNER JOIN plan_master B
+                ON A.plan_master_id = B.plan_master_id
+                INNER JOIN city C
+                ON B.city_id = C.city_id
+                LEFT JOIN feed_like D
+                ON D.plan_master_id = A.plan_master_id
+                WHERE B.plan_master_id = #{planMasterId}
+                LIMIT 1
+            </otherwise>
+        </choose>
+
+    </select>
+
     <select id="selFeedDetail">
-        SELECT A.title, A.content
-             , B.start_date AS startDate, B.end_date AS endDate, B.people_cnt AS peopleCnt
-             , C.city_kor_name AS cityName, C.color
-             , D.place_id AS placeId, D.price, D.memo, D.start_time AS startTime
-             , D.end_time AS endTime, D.`date`
-          FROM feed A
-         INNER JOIN plan_master B
-            ON A.plan_master_id = B.plan_master_id
-         INNER JOIN city C
-            ON B.city_id = C.city_id
-         INNER JOIN plan_detail D
-            ON B.plan_master_id = D.plan_master_id
-         WHERE B.user_id = #{userId}
-           AND B.plan_master_id = #{planMasterId}
+        SELECT D.place_id AS placeId, D.price, D.memo, D.start_time AS startTime
+        , D.end_time AS endTime, D.`date`
+        FROM feed A
+        INNER JOIN plan_master B
+        ON A.plan_master_id = B.plan_master_id
+        INNER JOIN plan_detail D
+        ON B.plan_master_id = D.plan_master_id
+        WHERE B.plan_master_id = #{planMasterId}
     </select>
 
     <insert id="insFeed">
         INSERT INTO feed
-           SET plan_master_id = #{planMasterId}
-             , title = #{title}
-             , content = #{content}
-             , location = #{location}
+        SET plan_master_id = #{planMasterId}
+        , title = #{title}
+        , content = #{content}
+        , location = #{location}
     </insert>
-    
+
     <update id="updFeed">
         UPDATE feed A
-         INNER JOIN plan_master B
-            ON A.plan_master_id = B.plan_master_id
+        INNER JOIN plan_master B
+        ON A.plan_master_id = B.plan_master_id
         <set>
             <if test=" title != null and title != '' ">
                 A.title = #{title}
@@ -71,12 +98,12 @@
                 , A.content = #{content}
             </if>
         </set>
-         WHERE A.plan_master_id = #{planMasterId}
-           AND B.user_id = #{userId}
+        WHERE A.plan_master_id = #{planMasterId}
+        AND B.user_id = #{userId}
     </update>
 
     <delete id="delFeed">
         DELETE FROM feed
-         WHERE plan_master_id = #{planMasterId}
+        WHERE plan_master_id = #{planMasterId}
     </delete>
 </mapper>

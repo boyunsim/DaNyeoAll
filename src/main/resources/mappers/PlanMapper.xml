@@ -13,7 +13,7 @@
         , plan_date = DATEDIFF(end_date, start_date)
     </insert>
 
-    <insert id="insPlanDetail">
+    <insert id="insPlanDetail" useGeneratedKeys="true" keyProperty="planId">
         INSERT INTO plan_detail
         SET plan_master_id = #{planMasterId}
         , place_id = #{placeId}
@@ -24,15 +24,61 @@
         , `date` = #{date}
     </insert>
 
-    <select id="selPlanList">
-        SELECT A.start_date AS startDate, A.end_date AS endDate, A.people_cnt AS peopleCnt
-        , B.place_id AS placeId, B.price, B.memo, B.start_time AS startTime
-        , B.end_time AS endTime, B.`date`
+    <select id="selMasterPlan">
+        SELECT plan_master_id, user_id AS userId, city_id AS cityId, start_date AS startDate
+        , end_date AS endDate, people_cnt AS peopleCnt, plan_date AS planDate
+        FROM plan_master
+        WHERE plan_master_id = #{planMasterId}
+    </select>
+
+    <select id="selPlanOnly">
+        SELECT A.plan_master_id, A.start_date AS startDate, A.end_date AS endDate, A.people_cnt AS peopleCnt, A.plan_date
+        , C.city_kor_name AS cityName, C.color
         FROM plan_master A
         INNER JOIN plan_detail B
         ON A.plan_master_id = B.plan_master_id
-        WHERE A.user_id = #{signedUserId}
-        AND A.plan_master_id = #{planMasterId}
+        INNER JOIN city C
+        ON C.city_id = A.city_id
+        WHERE A.plan_master_id = #{planMasterId}
+        LIMIT 1
+    </select>
+
+    <select id="selPlanList">
+        SELECT B.plan_id AS planId, B.place_id AS placeId
+        , B.price, B.memo, B.start_time AS startTime
+        , B.end_time AS endTime, B.`date`
+        , C.category, C.place_name AS placeName
+        , C.place_address AS placeAddress
+        FROM plan_master A
+        INNER JOIN plan_detail B
+        ON A.plan_master_id = B.plan_master_id
+        INNER JOIN city_place C
+        ON C.place_id = B.place_id
+        WHERE A.plan_master_id = #{planMasterId}
+    </select>
+
+    <select id="selPlanSumPrice">
+        SELECT SUM(B.price) AS price
+        FROM plan_master A
+        INNER JOIN plan_detail B
+        ON A.plan_master_id = B.plan_master_id
+        WHERE A.plan_master_id = #{planMasterId}
+    </select>
+
+    <select id="selPlanDayPrice">
+        SELECT SUM(B.price) AS price
+        FROM plan_master A
+        INNER JOIN plan_detail B
+        ON A.plan_master_id = B.plan_master_id
+        WHERE A.plan_master_id = #{planMasterId}
+        GROUP BY B.`date`
+        HAVING SUM(B.price)
+    </select>
+
+    <select id="selExistCityPlaceByPlaceName">
+        SELECT COUNT(place_name) AS exist, place_id
+          FROM city_place
+         WHERE place_name = #{placeName}
     </select>
 
     <update id="updPlan">
@@ -61,6 +107,10 @@
     <delete id="delPlan">
         DELETE FROM plan_master
         WHERE plan_master_id = #{planMasterId}
-        AND user_id = #{signedUserId}
+    </delete>
+
+    <delete id="delPlanDetail">
+        DELETE FROM plan_detail
+        WHERE plan_id = #{planId}
     </delete>
 </mapper>

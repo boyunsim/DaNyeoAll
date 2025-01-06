@@ -22,6 +22,8 @@ mail:
   auth-code-expiration-millis: 1800000
 
 mybatis:
+  configuration:
+    map-underscore-to-camel-case: true #snake_case column명을 자동으로 camel_case형으로 변환
   mapper-locations: mappers/**/*.xml
 
 spring:
@@ -32,6 +34,8 @@ spring:
     url: jdbc:log4jdbc:mariadb://localhost/danyeoall
     username: root
     password: green502
+  jackson:
+    default-property-inclusion: non_null
   servlet:
     multipart:
       max-file-size: 15MB
