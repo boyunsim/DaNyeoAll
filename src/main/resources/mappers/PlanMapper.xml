@@ -33,7 +33,7 @@
 
     <select id="selPlanOnly">
         SELECT A.plan_master_id, A.start_date AS startDate, A.end_date AS endDate, A.people_cnt AS peopleCnt, A.plan_date
-        , C.city_kor_name AS cityName, C.color
+        , C.city_kor_name AS cityName, C.color, C.city_id
         FROM plan_master A
         INNER JOIN plan_detail B
         ON A.plan_master_id = B.plan_master_id
