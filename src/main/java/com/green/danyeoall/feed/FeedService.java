@@ -37,6 +37,16 @@ public class FeedService {
         return list;
     }
 
+    public List<FeedGetRes> selFeedListLatest(FeedGetReq p) {
+        log.info("selFeedListMain : {}", p);
+        List<FeedGetRes> list = mapper.selFeedListLatest(p);
+        for(FeedGetRes item : list){
+            String createdAt = item.getCreatedAt();
+            item.setCreatedAt(createdAt.substring(0, createdAt.lastIndexOf(":")));
+        }
+        return list;
+    }
+
     public FeedDetailGetRes selFeedDetail(FeedDetailGetReq p) {
 
         FeedDetailGetRes res = mapper.selFeedOnlyPlan(p);

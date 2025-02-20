@@ -33,6 +33,23 @@
         ORDER BY COUNT(D.user_id) DESC
     </select>
 
+    <select id="selFeedListLatest">
+        SELECT A.plan_master_id AS planMasterId, A.title, A.created_at AS createdAt
+        , C.city_pic, C.color, C.city_kor_name AS cityName
+        , COUNT(D.user_id) AS likeCnt, C.city_id
+        FROM feed A
+        LEFT JOIN plan_master B
+        ON A.plan_master_id = B.plan_master_id
+        LEFT JOIN city C
+        ON B.city_id = C.city_id
+        LEFT JOIN feed_like D
+        ON A.plan_master_id = D.plan_master_id
+        GROUP BY A.plan_master_id
+        ORDER BY createdAt DESC
+    </select>
+
+
+
     <select id="selFeedOnlyPlan">
         <choose>
             <when test="userId != null">

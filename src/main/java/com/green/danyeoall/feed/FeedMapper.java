@@ -11,6 +11,7 @@ public interface FeedMapper {
     List<FeedGetRes> selFeedList(FeedGetReq p);
     List<FeedDetailGetDto> selFeedDetail(FeedDetailGetReq p);
     FeedDetailGetRes selFeedOnlyPlan(FeedDetailGetReq p);
+    List<FeedGetRes> selFeedListLatest(FeedGetReq p);
     int insFeed(FeedPostReq p);
     int updFeed(FeedPutReq p);
     int delFeed(FeedDelReq p);

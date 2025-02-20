@@ -40,9 +40,19 @@ public class FeedController {
     }
 
     @GetMapping
-    @Operation(summary = "피드 리스트")
+    @Operation(summary = "피드 리스트 좋아요 순")
     public ResultResponse<List<FeedGetRes>> selFeedList(@ParameterObject FeedGetReq p) {
         List<FeedGetRes> list = service.selFeedList(p);
+        return ResultResponse.<List<FeedGetRes>>builder()
+                .resultMessage(String.format("%d rows", list.size()))
+                .resultData(list)
+                .build();
+    }
+
+    @GetMapping("latest")
+    @Operation(summary = "피드 리스트 최신 순")
+    public ResultResponse<List<FeedGetRes>> selFeedListLatest(@ParameterObject FeedGetReq p) {
+        List<FeedGetRes> list = service.selFeedListLatest(p);
         return ResultResponse.<List<FeedGetRes>>builder()
                 .resultMessage(String.format("%d rows", list.size()))
                 .resultData(list)
